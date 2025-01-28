@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import android.util.Log // Para depuración
 
 @Composable
 fun RecoverPasswordScreen(navController: NavHostController) {
@@ -42,6 +43,11 @@ fun RecoverPasswordScreen(navController: NavHostController) {
                 val result = recoverPassword(context, email)
                 recoveredPassword = result
                 emailExists = result != null
+                if (!emailExists) {
+                    Log.d("RecoverPasswordScreen", "Correo electrónico no encontrado: $email")
+                } else {
+                    Log.d("RecoverPasswordScreen", "Contraseña recuperada: $recoveredPassword")
+                }
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(red = 85, green = 107, blue = 47, alpha = 255)
@@ -89,6 +95,8 @@ fun recoverPassword(context: Context, email: String): String? {
     val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
     val storedEmail = sharedPreferences.getString("email", null)
     val storedPassword = sharedPreferences.getString("password", null)
+    Log.d("recoverPassword", "Correo almacenado: $storedEmail")
+    Log.d("recoverPassword", "Contraseña almacenada: $storedPassword")
 
     return if (storedEmail == email) {
         storedPassword

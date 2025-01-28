@@ -54,7 +54,7 @@ fun ProfileScreen(navController: NavHostController) {
             text = "Perfil del Usuario",
             fontSize = 40.sp,
             fontWeight = FontWeight.Bold,
-            fontFamily = customFontFamily, // Añadiendo la fuente personalizada aquí
+            fontFamily = customFontFamily,
             color = greenMossColor,
             modifier = Modifier.padding(bottom = 16.dp)
         )

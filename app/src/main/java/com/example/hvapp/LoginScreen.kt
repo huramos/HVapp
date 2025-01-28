@@ -74,7 +74,6 @@ fun LoginScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón de Registro igual al de Iniciar Sesión
         Button(
             onClick = { navController.navigate("register_screen") },
             colors = ButtonDefaults.buttonColors(
@@ -89,7 +88,6 @@ fun LoginScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón de Recuperar Contraseña igual al de Iniciar Sesión
         Button(
             onClick = { navController.navigate("recover_password_screen") },
             colors = ButtonDefaults.buttonColors(

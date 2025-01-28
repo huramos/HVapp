@@ -4,5 +4,5 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 
 object Fonts {
-    val customFontFamily = FontFamily(Font(R.font.custom_font)) // Asegúrate de que la fuente está referenciada correctamente
+    val customFontFamily = FontFamily(Font(R.font.custom_font))
 }
