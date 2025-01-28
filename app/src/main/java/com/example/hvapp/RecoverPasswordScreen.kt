@@ -71,8 +71,16 @@ fun RecoverPasswordScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        TextButton(onClick = { navController.navigate("login_screen") }) {
-            Text(text = "Volver", color = Color.Blue, fontSize = 16.sp)
+        Button(
+            onClick = { navController.navigate("login_screen") },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(red = 85, green = 107, blue = 47, alpha = 255)
+            ),
+            modifier = Modifier
+                .width(250.dp)
+                .height(60.dp)
+        ) {
+            Text(text = "Volver", fontSize = 20.sp, color = Color.White)
         }
     }
 }

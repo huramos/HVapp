@@ -2,9 +2,9 @@ package com.example.hvapp
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.NavHostController
 
 @Composable
 fun SetupNavGraph(navController: NavHostController, modifier: Modifier = Modifier) {
@@ -24,6 +24,13 @@ fun SetupNavGraph(navController: NavHostController, modifier: Modifier = Modifie
         }
         composable("recover_password_screen") {
             RecoverPasswordScreen(navController = navController)
+        }
+        composable("welcome_screen/{username}") { backStackEntry ->
+            val username = backStackEntry.arguments?.getString("username") ?: ""
+            WelcomeScreen(navController = navController, username = username)
+        }
+        composable("users_screen") {
+            UsersScreen(navController = navController)
         }
     }
 }
