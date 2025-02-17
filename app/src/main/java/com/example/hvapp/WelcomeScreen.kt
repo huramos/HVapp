@@ -1,4 +1,3 @@
-// WelcomeScreen.kt
 package com.example.hvapp
 
 import androidx.compose.foundation.Image
@@ -44,7 +43,7 @@ fun WelcomeScreen(navController: NavHostController, username: String) {
                         color = greenMossColor
                     )
                 ) {
-                    append("Bienvenido, ")
+                    append("Bienvenido ")
                 }
                 withStyle(
                     style = SpanStyle(
@@ -87,6 +86,15 @@ fun WelcomeScreen(navController: NavHostController, username: String) {
             modifier = Modifier.width(250.dp).height(60.dp)
         ) {
             Text("Usuarios Registrados", fontSize = 18.sp, color = Color.White)
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = { navController.navigate("videos_screen") }, // Nuevo botón para Videos
+            colors = ButtonDefaults.buttonColors(containerColor = greenMossColor),
+            modifier = Modifier.width(250.dp).height(60.dp)
+        ) {
+            Text("Ver Videos", fontSize = 18.sp, color = Color.White)
         }
 
         Spacer(modifier = Modifier.height(16.dp))

@@ -9,17 +9,26 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import com.example.hvapp.Fonts.customFontFamily
 
 @Composable
 fun UsersScreen(navController: NavHostController) {
-    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd/MM/yyyy").withZone(ZoneId.of("America/Santiago")) }
+    val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy").withZone(ZoneId.of("America/Santiago"))
     val greenMossColor = Color(red = 85, green = 107, blue = 47)
+    val titleStyle = TextStyle(
+        fontSize = 50.sp,
+        fontWeight = FontWeight.Bold,
+        fontFamily = customFontFamily,
+        color = greenMossColor
+    )
 
     Column(
         modifier = Modifier
@@ -30,14 +39,20 @@ fun UsersScreen(navController: NavHostController) {
     ) {
         Text(
             text = "Usuarios Registrados",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = greenMossColor,
+            style = titleStyle,
+            textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
         if (usuarios.isEmpty()) {
-            Text("No hay usuarios registrados.")
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFFD0F0C0), shape = RoundedCornerShape(8.dp))
+                    .padding(16.dp)
+            ) {
+                Text("No hay usuarios registrados.")
+            }
         } else {
             Column(
                 modifier = Modifier
@@ -66,7 +81,6 @@ fun UsersScreen(navController: NavHostController) {
                         color = Color.White
                     )
                 }
-
                 usuarios.forEach { usuario ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -83,7 +97,7 @@ fun UsersScreen(navController: NavHostController) {
                             color = greenMossColor
                         )
                         Text(
-                            usuario.fechaCreacion.atStartOfDay(ZoneId.of("America/Santiago")).toLocalDate().format(dateFormatter),
+                            usuario.fechaCreacion.format(dateFormatter),
                             modifier = Modifier.padding(8.dp),
                             color = greenMossColor
                         )
@@ -103,7 +117,7 @@ fun UsersScreen(navController: NavHostController) {
                 .width(250.dp)
                 .height(60.dp)
         ) {
-            Text(text = "Regresar", fontSize = 20.sp, color = Color.White)
+            Text(text = "Volver", fontSize = 20.sp, color = Color.White)
         }
     }
 }

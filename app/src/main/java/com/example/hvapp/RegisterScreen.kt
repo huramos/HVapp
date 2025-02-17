@@ -7,13 +7,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
+import com.example.hvapp.Fonts.customFontFamily
 
 @Composable
 fun RegisterScreen(navController: NavHostController) {
@@ -21,11 +26,22 @@ fun RegisterScreen(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf(false) }
+    var passwordError by remember { mutableStateOf(false) }
+    var emptyFieldsError by remember { mutableStateOf(false) }
     var registroResultado by remember { mutableStateOf("") }
+    var isRegistered by remember { mutableStateOf(false) }
+    var registerEnabled by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val greenMossColor = Color(red = 85, green = 107, blue = 47)
+    val titleStyle = TextStyle(
+        fontSize = 50.sp,
+        fontWeight = FontWeight.Bold,
+        fontFamily = customFontFamily,
+        color = greenMossColor
+    )
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -38,14 +54,22 @@ fun RegisterScreen(navController: NavHostController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(text = "Registrarse", style = MaterialTheme.typography.titleLarge)
+                Text(
+                    text = "Registrarse",
+                    style = titleStyle,
+                    textAlign = TextAlign.Center
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
-
                 OutlinedTextField(
                     value = username,
-                    onValueChange = { username = it },
-                    label = { Text("Usuario") }
+                    onValueChange = {
+                        username = it
+                        emptyFieldsError = username.isBlank() || email.isBlank() || password.isBlank()
+                        registerEnabled = !emptyFieldsError && !emailError && !passwordError
+                    },
+                    label = { Text("Usuario") },
+                    isError = emptyFieldsError && username.isBlank()
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -54,51 +78,74 @@ fun RegisterScreen(navController: NavHostController) {
                     value = email,
                     onValueChange = {
                         email = it
-                        emailError = !isValidEmail(it)
+                        emailError = !isValidEmail(it) || !isEmailUnique(it)
+                        emptyFieldsError = username.isBlank() || email.isBlank() || password.isBlank()
+                        registerEnabled = !emptyFieldsError && !emailError && !passwordError
                     },
                     label = { Text("Correo Electrónico") },
-                    isError = emailError
+                    isError = emailError || (emptyFieldsError && email.isBlank())
                 )
 
                 if (emailError) {
                     Text(
-                        text = "Correo electrónico no válido",
+                        text = if (!isValidEmail(email))
+                            "Correo electrónico no válido"
+                        else
+                            "Correo electrónico ya registrado",
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
-
                 OutlinedTextField(
                     value = password,
-                    onValueChange = { password = it },
+                    onValueChange = {
+                        password = it
+                        passwordError = !isValidPassword(it)
+                        emptyFieldsError = username.isBlank() || email.isBlank() || password.isBlank()
+                        registerEnabled = !emptyFieldsError && !emailError && !passwordError
+                    },
                     label = { Text("Contraseña") },
-                    visualTransformation = PasswordVisualTransformation()
+                    visualTransformation = PasswordVisualTransformation(),
+                    isError = passwordError || (emptyFieldsError && password.isBlank())
                 )
 
+                if (passwordError) {
+                    Text(
+                        text = "La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un símbolo.",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+
+                if (emptyFieldsError) {
+                    Text(
+                        text = "Todos los campos son obligatorios",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
-
-                val fechaDeAlta = obtenerFechaActual(ZoneId.of("America/Santiago"))
-
                 Button(
                     onClick = {
-                        if (!emailError) {
+                        if (!emailError && !passwordError && !emptyFieldsError) {
                             val result = registrarUsuario(username, email, password)
                             if (result.startsWith("Usuario")) {
-                                saveUser(context, username, email, password, fechaDeAlta.toString())
+                                saveUser(context, username, email, password, obtenerFechaActual(ZoneId.of("America/Santiago")).toString())
+                                isRegistered = true
+                                coroutineScope.launch {
+                                    delay(500) // Espera 2 segundos antes de navegar
+                                    navController.navigate("login_screen")
+                                }
                             }
                             registroResultado = result
-                            coroutineScope.launch {
-                                snackbarHostState.showSnackbar(registroResultado, duration = SnackbarDuration.Short)
-                            }
-                            if (usuarios.size < 6) {
-                                navController.navigate("login_screen")
-                            }
                         }
                     },
+                    enabled = registerEnabled,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(red = 85, green = 107, blue = 47, alpha = 255)
+                        containerColor = greenMossColor
                     ),
                     modifier = Modifier
                         .width(250.dp)
@@ -111,14 +158,20 @@ fun RegisterScreen(navController: NavHostController) {
 
                 Button(
                     onClick = { navController.navigate("login_screen") },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(red = 85, green = 107, blue = 47, alpha = 255)
-                    ),
+                    colors = ButtonDefaults.buttonColors(containerColor = greenMossColor),
                     modifier = Modifier
                         .width(250.dp)
                         .height(60.dp)
                 ) {
                     Text(text = "Volver", fontSize = 20.sp, color = Color.White)
+                }
+
+                if (isRegistered) {
+                    LaunchedEffect(Unit) {
+                        snackbarHostState.showSnackbar("Registro completo", duration = SnackbarDuration.Short)
+                        delay(500)
+                        navController.navigate("login_screen")
+                    }
                 }
             }
         }
@@ -127,6 +180,15 @@ fun RegisterScreen(navController: NavHostController) {
 
 fun isValidEmail(email: String): Boolean {
     return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+}
+
+fun isValidPassword(password: String): Boolean {
+    val passwordPattern = Regex("^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@#\$%^&+=]).{8,}$")
+    return password.matches(passwordPattern)
+}
+
+fun isEmailUnique(email: String): Boolean {
+    return !usuarios.any { it.email == email }
 }
 
 fun obtenerFechaActual(zone: ZoneId = ZoneId.of("America/Santiago")): LocalDate {

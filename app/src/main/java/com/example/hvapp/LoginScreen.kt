@@ -4,13 +4,18 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
+import com.example.hvapp.Fonts.customFontFamily
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
@@ -19,6 +24,16 @@ fun LoginScreen(navController: NavHostController) {
     val context = LocalContext.current
     var showError by remember { mutableStateOf(false) }
 
+    val greenMossColor = Color(red = 85, green = 107, blue = 47)
+    val titleStyle = remember {
+        TextStyle(
+            fontSize = 50.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = customFontFamily,
+            color = greenMossColor
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -26,7 +41,11 @@ fun LoginScreen(navController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Iniciar Sesión", style = MaterialTheme.typography.titleLarge)
+        Text(
+            text = "Iniciar Sesión",
+            style = titleStyle,
+            textAlign = TextAlign.Center
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -37,7 +56,6 @@ fun LoginScreen(navController: NavHostController) {
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -77,7 +95,7 @@ fun LoginScreen(navController: NavHostController) {
         Button(
             onClick = { navController.navigate("register_screen") },
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(red = 85, green = 107, blue = 47, alpha = 255)
+                containerColor = greenMossColor
             ),
             modifier = Modifier
                 .width(250.dp)
@@ -91,7 +109,7 @@ fun LoginScreen(navController: NavHostController) {
         Button(
             onClick = { navController.navigate("recover_password_screen") },
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(red = 85, green = 107, blue = 47, alpha = 255)
+                containerColor = greenMossColor
             ),
             modifier = Modifier
                 .width(250.dp)

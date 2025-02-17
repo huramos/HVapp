@@ -7,10 +7,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
-import android.util.Log // Para depuración
+import com.example.hvapp.Fonts.customFontFamily
+import java.time.LocalDate
+import java.time.ZoneId
 
 @Composable
 fun RecoverPasswordScreen(navController: NavHostController) {
@@ -19,6 +25,16 @@ fun RecoverPasswordScreen(navController: NavHostController) {
     var emailExists by remember { mutableStateOf(true) }
     val context = LocalContext.current
 
+    val greenMossColor = Color(red = 85, green = 107, blue = 47)
+    val titleStyle = remember {
+        TextStyle(
+            fontSize = 50.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = customFontFamily,
+            color = greenMossColor
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -26,7 +42,11 @@ fun RecoverPasswordScreen(navController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Recuperar Contraseña", style = MaterialTheme.typography.titleLarge)
+        Text(
+            text = "Recuperar Contraseña",
+            style = titleStyle,
+            textAlign = TextAlign.Center
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -37,20 +57,14 @@ fun RecoverPasswordScreen(navController: NavHostController) {
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-
         Button(
             onClick = {
                 val result = recoverPassword(context, email)
                 recoveredPassword = result
                 emailExists = result != null
-                if (!emailExists) {
-                    Log.d("RecoverPasswordScreen", "Correo electrónico no encontrado: $email")
-                } else {
-                    Log.d("RecoverPasswordScreen", "Contraseña recuperada: $recoveredPassword")
-                }
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(red = 85, green = 107, blue = 47, alpha = 255)
+                containerColor = greenMossColor
             ),
             modifier = Modifier
                 .width(250.dp)
@@ -80,7 +94,7 @@ fun RecoverPasswordScreen(navController: NavHostController) {
         Button(
             onClick = { navController.navigate("login_screen") },
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(red = 85, green = 107, blue = 47, alpha = 255)
+                containerColor = greenMossColor
             ),
             modifier = Modifier
                 .width(250.dp)
@@ -95,8 +109,6 @@ fun recoverPassword(context: Context, email: String): String? {
     val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
     val storedEmail = sharedPreferences.getString("email", null)
     val storedPassword = sharedPreferences.getString("password", null)
-    Log.d("recoverPassword", "Correo almacenado: $storedEmail")
-    Log.d("recoverPassword", "Contraseña almacenada: $storedPassword")
 
     return if (storedEmail == email) {
         storedPassword
